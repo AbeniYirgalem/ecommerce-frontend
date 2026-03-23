@@ -1,0 +1,30 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+@keyframes toggle-rotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  40% {
+    transform: rotate(360deg) scale(1.2);
+  }
+  70% {
+    transform: rotate(360deg) scale(0.95);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+.animate-toggle-rotate {
+  animation: toggle-rotate 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.text-stroke-white-thin {
+  -webkit-text-stroke: 0.5px #52d7f8;
+  text-stroke: 0.5px #52d7f8;
+}
