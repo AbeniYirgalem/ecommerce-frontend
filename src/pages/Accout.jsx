@@ -1,0 +1,417 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserProfile } from "../redux/slices/authSlice";
+import { updateUserAvatar } from "../redux/slices/userSlice";
+import {
+  FaCamera,
+  FaTrash,
+  FaEnvelope,
+  FaGraduationCap,
+  FaStore,
+  FaBook,
+  FaBuilding,
+  FaUser,
+  FaCalendarAlt,
+  FaUserFriends,
+  FaFileAlt,
+} from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+
+const ProfileSection = ({ title, children }) => (
+  <motion.div
+    className="mb-8"
+    initial={{ opacity: 0, y: 30 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4 }}
+  >
+    <h2 className="text-xl font-semibold text-neutral-800 dark:text-white mb-4 font-poppins">
+      {title}
+    </h2>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      {children}
+    </div>
+  </motion.div>
+);
+
+const ProfileField = ({ icon, label, value }) => (
+  <div className="flex items-start mb-4 last:mb-0">
+    <div className="p-2 rounded-full bg-blue-50 dark:bg-blue-900 mr-3">
+      {/* Icon is now passed as a component, clone it with new props */}
+      {React.cloneElement(icon, {
+        className: `${icon.props.className} text-blue-600 dark:text-white`,
+      })}
+    </div>
+    <div>
+      <p className="text-sm text-neutral-500 dark:text-gray-300 font-inter">
+        {label}
+      </p>
+      <p className="text-neutral-800 dark:text-white font-medium font-inter">
+        {value || "Not provided"}
+      </p>
+    </div>
+  </div>
+);
+
+function Account() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user, loading, isAuthenticated } = useSelector((state) => state.auth);
+  const isEmailVerified =
+    user?.is_email_verified ?? user?.isVerified ?? user?.is_verified ?? false;
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchUserProfile());
+    } else {
+      navigate("/login");
+    }
+  }, [dispatch, isAuthenticated, navigate]);
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    setError(null);
+    setSuccess(null);
+    try {
+      await dispatch(updateUserAvatar(formData)).unwrap();
+      await dispatch(fetchUserProfile({ force: true }));
+      setSuccess("Profile picture updated successfully");
+    } catch (err) {
+      setError(err || "Failed to update avatar");
+    }
+  };
+
+  const handleAvatarDelete = () => {
+    setSuccess("Profile picture removed successfully");
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex justify-center items-center">
+        <div className="flex flex-col items-center bg-gradient-to-br from-white/80 to-white/60 dark:from-gray-800/80 dark:to-gray-900/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 text-gray-800 dark:text-white">
+          <svg
+            className="animate-spin h-10 w-10 text-blue-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          <p className="mt-4 text-gray-700 dark:text-gray-300 text-lg font-inter">
+            Loading profile...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex justify-center items-center">
+        <div className="text-center bg-gradient-to-br from-white/80 to-white/60 dark:from-gray-800/80 dark:to-gray-900/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 text-gray-800 dark:text-white">
+          <p className="text-xl mb-4 font-inter">User profile not found</p>
+          <button
+            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-white font-poppins"
+            onClick={() => navigate("/login")}
+          >
+            Sign in
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Extract role-specific data directly from the user object
+  const studentProfile = user.student_profile_data;
+  const merchantProfile = user.merchant_profile_data;
+  const tutorProfile = user.tutor_profile_data;
+  const campusAdminProfile = user.campus_admin_profile_data;
+
+  return (
+    <div className="bg-white dark:bg-gray-900 pt-20 pb-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              className="bg-red-100 border border-red-200 text-red-700 p-3 rounded-lg mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <p className="text-sm text-center font-inter">{error}</p>
+              <button
+                className="text-red-700 text-xs underline ml-2"
+                onClick={() => setError(null)}
+              >
+                Dismiss
+              </button>
+            </motion.div>
+          )}
+          {success && (
+            <motion.div
+              className="bg-green-100 border border-green-200 text-green-700 p-3 rounded-lg mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <p className="text-sm text-center font-inter">{success}</p>
+              <button
+                className="text-green-700 text-xs underline ml-2"
+                onClick={() => setSuccess(null)}
+              >
+                Dismiss
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="lg:w-1/3">
+            <ProfileSection title="Profile">
+              <div className="flex flex-col items-center">
+                <motion.div
+                  className="relative mb-6"
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <div className="w-32 h-32 rounded-full bg-neutral-200 overflow-hidden">
+                    {user.avatar || user.profile_picture ? (
+                      <img
+                        src={user.avatar || user.profile_picture}
+                        alt={user.full_name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-neutral-400">
+                        <FaUser size={64} />
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute bottom-0 right-0 flex gap-2">
+                    <label className="p-2 rounded-full bg-blue-600 text-white cursor-pointer hover:bg-blue-700 transition-colors">
+                      <FaCamera size={18} />
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                      />
+                    </label>
+                    {(user.avatar || user.profile_picture) && (
+                      <button
+                        className="p-2 rounded-full bg-red-600 text-white hover:bg-red-700 transition-colors"
+                        onClick={handleAvatarDelete}
+                      >
+                        <FaTrash size={18} />
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
+                <h3 className="text-xl font-bold font-poppins text-gray-800 dark:text-white">
+                  {user.full_name}
+                </h3>
+                <p className="text-neutral-500 dark:text-gray-300 capitalize mb-4 font-inter">
+                  {user.role === "campus_admin"
+                    ? "Campus Admin"
+                    : user.role === "merchant"
+                      ? "Merchant"
+                      : user.role === "tutor"
+                        ? "Tutor"
+                        : "Student"}
+                </p>
+              </div>
+            </ProfileSection>
+
+            <ProfileSection title="Account Information">
+              <ProfileField
+                icon={<FaEnvelope size={20} />}
+                label="Email Address"
+                value={user.email}
+              />
+              {!isEmailVerified && (
+                <div className="flex items-center mb-4">
+                  <div className="ml-12 text-xs font-inter text-amber-600">
+                    Not verified
+                  </div>
+                </div>
+              )}
+
+              {user.university_details && (
+                <ProfileField
+                  icon={<FaBuilding size={20} />}
+                  label="University Details"
+                  value={user.university_details}
+                />
+              )}
+              <p className="text-xs text-neutral-500 dark:text-gray-300 mt-4 font-inter">
+                Member since {new Date(user.date_joined).toLocaleDateString()}
+              </p>
+              {user.bio && (
+                <ProfileField
+                  icon={<FaBook size={20} />}
+                  label="Bio"
+                  value={user.bio}
+                />
+              )}
+            </ProfileSection>
+          </div>
+
+          <div className="lg:w-2/3">
+            {user.role === "student" && studentProfile && (
+              <ProfileSection title="Student Information">
+                <ProfileField
+                  icon={<FaGraduationCap size={20} />}
+                  label="Department"
+                  value={studentProfile.department_name}
+                />
+                <ProfileField
+                  icon={<FaCalendarAlt size={20} />}
+                  label="Year"
+                  value={studentProfile.year_in_school}
+                />
+                <ProfileField
+                  icon={<FaUser size={20} />}
+                  label="Enrollment Type"
+                  value={studentProfile.enrollment_type}
+                />
+                {/* Add more student-specific fields from studentProfile as needed */}
+              </ProfileSection>
+            )}
+
+            {user.role === "merchant" && merchantProfile && (
+              <ProfileSection title="Merchant Information">
+                <ProfileField
+                  icon={<FaStore size={20} />}
+                  label="Store Name"
+                  value={merchantProfile.store_name}
+                />
+                <ProfileField
+                  icon={<FaBuilding size={20} />}
+                  label="Nearest University"
+                  value={merchantProfile.nearest_university}
+                />
+                <ProfileField
+                  icon={<FaPhone size={20} />}
+                  label="Business Phone"
+                  value={merchantProfile.phone_number}
+                />
+                <ProfileField
+                  icon={<FaBook size={20} />} // Using FaBook for TIN, can be changed
+                  label="TIN Number"
+                  value={merchantProfile.tin_number}
+                />
+                {merchantProfile.business_docs && (
+                  <ProfileField
+                    icon={<FaFileAlt size={20} />}
+                    label="Business Documents"
+                    value={
+                      <a
+                        href={merchantProfile.business_docs}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        View Document
+                      </a>
+                    }
+                  />
+                )}
+              </ProfileSection>
+            )}
+
+            {user.role === "tutor" && tutorProfile && (
+              <ProfileSection title="Tutor Information">
+                <ProfileField
+                  icon={<FaBook size={20} />}
+                  label="Department"
+                  value={tutorProfile.department_name}
+                />
+                <ProfileField
+                  icon={<FaCalendarAlt size={20} />}
+                  label="Year"
+                  value={tutorProfile.year_in_school}
+                />
+                <ProfileField
+                  icon={<FaGraduationCap size={20} />}
+                  label="Expertise"
+                  value={tutorProfile.expertise}
+                />
+                <ProfileField
+                  icon={<FaUserFriends size={20} />}
+                  label="Tutoring Experience"
+                  value={
+                    tutorProfile.experience_years
+                      ? `${tutorProfile.experience_years} years`
+                      : tutorProfile.experience_description
+                  }
+                />
+                {tutorProfile.courses_can_teach &&
+                  tutorProfile.courses_can_teach.length > 0 && (
+                    <ProfileField
+                      icon={<FaBook size={20} />}
+                      label="Courses Can Teach"
+                      value={tutorProfile.courses_can_teach.join(", ")}
+                    />
+                  )}
+                {tutorProfile.availability && (
+                  <ProfileField
+                    icon={<FaCalendarAlt size={20} />}
+                    label="Availability"
+                    value={tutorProfile.availability}
+                  />
+                )}
+                {/* Add more tutor-specific fields from tutorProfile as needed */}
+              </ProfileSection>
+            )}
+
+            {user.role === "campus_admin" && campusAdminProfile && (
+              <ProfileSection title="Campus Admin Information">
+                <ProfileField
+                  icon={<FaBuilding size={20} />}
+                  label="University Managed" // Changed label for clarity
+                  value={campusAdminProfile.university_name}
+                />
+                <ProfileField
+                  icon={<FaUserFriends size={20} />}
+                  label="Admin Role Title" // Changed label for clarity
+                  value={campusAdminProfile.admin_role}
+                />
+                {/* Add more campus_admin-specific fields from campusAdminProfile as needed */}
+              </ProfileSection>
+            )}
+
+            {/* Activity Section */}
+            <ProfileSection title="Recent Activity">
+              <div className="py-6 text-center text-neutral-500 dark:text-gray-300 font-inter">
+                <p>No recent activity to display</p>
+              </div>
+            </ProfileSection>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Account;
