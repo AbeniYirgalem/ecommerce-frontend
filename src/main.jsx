@@ -1,5 +1,5 @@
-// src/main.jsx
-// App entry point — unchanged except store import now points to src/store/store.js.
+﻿// src/main.jsx
+// App entry point -- unchanged except store import now points to src/store/store.js.
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -15,5 +15,5 @@ createRoot(document.getElementById("root")).render(
         <App />
       </NextUIProvider>
     </Provider>
-  </StrictMode>
+  </StrictMode>,
 );
