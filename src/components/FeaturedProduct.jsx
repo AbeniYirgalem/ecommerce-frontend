@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Star, ShoppingBag, Heart } from "lucide-react";
 import { addToCart } from "../redux/slices/cartSlice";
@@ -69,7 +69,7 @@ const FeaturedProduct = () => {
           {products.map((product) => (
             <Link
               key={product.id}
-              to="/listings"
+              to="/products"
               className="group block h-full"
               style={{ textDecoration: "none" }}
             >
@@ -148,7 +148,7 @@ const FeaturedProduct = () => {
 
         <div className="mt-12 text-center">
           <Link
-            to="/listings"
+            to="/products"
             className="inline-block bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 px-8 py-3 rounded-full font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300"
           >
             View All Products
@@ -160,3 +160,4 @@ const FeaturedProduct = () => {
 };
 
 export default FeaturedProduct;
+
