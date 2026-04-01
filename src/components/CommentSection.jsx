@@ -1,4 +1,4 @@
-// src/components/CommentSection.jsx
+﻿// src/components/CommentSection.jsx
 import { useState } from "react";
 
 function CommentSection() {
@@ -73,3 +73,4 @@ function CommentSection() {
 }
 
 export default CommentSection;
+
