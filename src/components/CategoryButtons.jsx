@@ -1,4 +1,4 @@
-function CategoryButtons({ categories, selectedCategory, onCategoryChange }) {
+﻿function CategoryButtons({ categories, selectedCategory, onCategoryChange }) {
   const staticCategories = [
     "Products",
     "Notes & Textbooks",
@@ -40,3 +40,4 @@ function CategoryButtons({ categories, selectedCategory, onCategoryChange }) {
 }
 
 export default CategoryButtons;
+
