@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { FaFacebook, FaTwitter, FaInstagram, FaTelegram } from "react-icons/fa";
 
 function Footer() {
@@ -21,7 +21,7 @@ function Footer() {
               UniBazzar
             </h2>
             <p className="text-gray-300 mb-6 text-sm leading-relaxed font-inter">
-              Connecting students across campuses with trusted local commerce —
+              Connecting students across campuses with trusted local commerce --
               from books to tutoring and more.
             </p>
             <div className="flex space-x-4 mt-4">
@@ -43,7 +43,7 @@ function Footer() {
               />
             </div>
             <p className="text-xs text-blue-200 mt-4 font-inter">
-              🌐 Ethiopian Universities ·
+              Ethiopian Universities -
             </p>
           </div>
 
@@ -54,7 +54,7 @@ function Footer() {
             </h4>
             <ul className="space-y-3">
               <FooterLink to="/account" label="Profile" />
-              <FooterLink to="/listings" label="Tutoring Services" />
+              <FooterLink to="/products" label="Tutoring Services" />
               <FooterLink to="/about" label="About Us" />
               <FooterLink to="/contact" label="Contact" />
             </ul>
@@ -79,15 +79,21 @@ function Footer() {
             </h4>
             <ul className="space-y-3 text-gray-300 text-sm font-inter">
               <li className="flex items-start gap-3">
-                <span className="text-blue-400 mt-1">📍</span>
+                <span className="text-blue-400 mt-1" aria-hidden="true">
+                  *
+                </span>
                 <span>Addis Ababa, Ethiopia</span>
               </li>
               <li className="flex items-center gap-3">
-                <span className="text-blue-400">📞</span>
+                <span className="text-blue-400" aria-hidden="true">
+                  *
+                </span>
                 <span>+251 900 000 000</span>
               </li>
               <li className="flex items-center gap-3">
-                <span className="text-blue-400">✉️</span>
+                <span className="text-blue-400" aria-hidden="true">
+                  *
+                </span>
                 <span>support@unibazzar.com</span>
               </li>
             </ul>
