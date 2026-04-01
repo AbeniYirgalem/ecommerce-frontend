@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect, useRef } from "react";
+﻿import { Fragment, useState, useEffect, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -17,7 +17,6 @@ import { logoutUser } from "../redux/slices/authSlice";
 import { IoMoon, IoSunny } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaUserCircle } from "react-icons/fa";
-import ServiceModal from "./TutorDashboard/ServiceModal";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -25,7 +24,6 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isToggling, setIsToggling] = useState(false);
-  const [showServiceModal, setShowServiceModal] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userMenuRef = useRef(null);
@@ -44,7 +42,7 @@ export default function Navbar() {
       document.documentElement.classList.remove("dark");
     } else {
       const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
+        "(prefers-color-scheme: dark)",
       ).matches;
       setIsDarkMode(prefersDark);
       document.documentElement.classList.toggle("dark", prefersDark);
@@ -99,22 +97,18 @@ export default function Navbar() {
       });
   };
 
-  // Replace Post button logic for tutors
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "Marketplace", path: "/listings" },
+    { name: "Products", path: "/products" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
-    // For tutors, Post redirects to My Services page
-    user && user.is_tutor
-      ? { name: "Post", onClick: () => navigate("/tutor-dashboard/services") }
-      : { name: "Post", path: "/create" },
+    { name: "Post", path: "/create" },
   ];
 
   let desktopNavLinks = [...navLinks];
   const dashboardLink = {
     name: "Dashboard",
-    path: "/dashboard-redirect",
+    path: "/dashboard",
   };
   const postIndex = desktopNavLinks.findIndex((link) => link.name === "Post");
   if (postIndex !== -1) {
@@ -186,7 +180,7 @@ export default function Navbar() {
                   {link.name}
                   <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-400 group-hover:w-full transition-all duration-300 rounded-full"></span>
                 </Link>
-              )
+              ),
             )}
             <button
               onClick={() => {
@@ -263,28 +257,6 @@ export default function Navbar() {
                         >
                           Profile
                         </button>
-                        {user.is_tutor && (
-                          <button
-                            onClick={() => {
-                              setShowUserMenu(false);
-                              navigate("/tutor-dashboard");
-                            }}
-                            className="w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors font-medium cursor-pointer"
-                          >
-                            Tutor Dashboard
-                          </button>
-                        )}
-                        {user.is_merchant && (
-                          <button
-                            onClick={() => {
-                              setShowUserMenu(false);
-                              navigate("/merchant-dashboard");
-                            }}
-                            className="w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors font-medium cursor-pointer"
-                          >
-                            Merchant Dashboard
-                          </button>
-                        )}
                         <button
                           onClick={() => {
                             setShowUserMenu(false);
@@ -406,7 +378,7 @@ export default function Navbar() {
                   {link.name === "Home" && (
                     <HomeModernIcon className="w-5 h-5" />
                   )}
-                  {link.name === "Marketplace" && (
+                  {link.name === "Products" && (
                     <ShoppingBagIcon className="w-5 h-5" />
                   )}
                   {link.name === "About" && (
@@ -425,7 +397,7 @@ export default function Navbar() {
                 </Link>
               ))}
               <Link
-                to="/dashboard-redirect"
+                to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold text-base transition-colors duration-200 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-gray-700 dark:text-gray-200 cursor-pointer"
               >
@@ -513,14 +485,6 @@ export default function Navbar() {
           </Dialog.Panel>
         </Dialog>
       </Transition>
-      {/* ServiceModal for tutors' Post button */}
-      {showServiceModal && (
-        <ServiceModal
-          isOpen={showServiceModal}
-          onClose={() => setShowServiceModal(false)}
-          onSave={() => setShowServiceModal(false)}
-        />
-      )}
     </nav>
   );
 }
