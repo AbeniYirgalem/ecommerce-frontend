@@ -1,5 +1,5 @@
-// src/App.jsx
-// Slim root component — all route definitions live in src/routes/index.jsx,
+﻿// src/App.jsx
+// Slim root component -- all route definitions live in src/routes/index.jsx,
 // all layout chrome (Navbar, Footer, Chatbot) lives in src/layouts/MainLayout.jsx.
 // Theme logic lives in src/hooks/useTheme.js.
 
