@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -49,7 +49,7 @@ const CategorySection = () => {
             </p>
           </div>
           <Link
-            to="/listings"
+            to="/products"
             className="hidden md:flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors"
           >
             <span>View All Categories</span>
@@ -60,7 +60,7 @@ const CategorySection = () => {
           {categories.map((category) => (
             <Link
               key={category.id}
-              to={`/listings?category=${encodeURIComponent(category.name)}`}
+              to="/products"
               className="group relative overflow-hidden rounded-xl aspect-[0.9/1] block bg-white dark:bg-gray-800"
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10"></div>
@@ -89,7 +89,7 @@ const CategorySection = () => {
         </div>
         <div className="mt-8 text-center md:hidden">
           <Link
-            to="/listings"
+            to="/products"
             className="inline-flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors"
           >
             <span>View All Categories</span>
