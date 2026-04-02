@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Heart, ShoppingBag, Star } from "lucide-react";
+import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import productService from "../../services/product.service";
 
 /**
  * Product card component
@@ -48,11 +50,28 @@ const ProductCard = ({ product, onAddToCart, uniqueKey }) => {
     product.name || product.title || product.description || "Untitled";
 
   const [imgSrc, setImgSrc] = useState(initialImageUrl);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const userId = user?._id || user?.id;
+  const [favoriteCount, setFavoriteCount] = useState(
+    Number(product.favoritesCount || 0),
+  );
+  const [isFavorite, setIsFavorite] = useState(() => {
+    if (!userId) return false;
+    const favorites = Array.isArray(product.favorites) ? product.favorites : [];
+    return favorites.some((favoriteId) => favoriteId === userId);
+  });
+  const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
 
   // Update state if product prop changes dynamically
   useEffect(() => {
     setImgSrc(initialImageUrl);
   }, [initialImageUrl]);
+
+  useEffect(() => {
+    const favorites = Array.isArray(product.favorites) ? product.favorites : [];
+    setIsFavorite(userId ? favorites.includes(userId) : false);
+    setFavoriteCount(Number(product.favoritesCount || favorites.length || 0));
+  }, [product, userId]);
 
   // Get rating and price safely
   const rating = product.rating || 0;
@@ -93,6 +112,39 @@ const ProductCard = ({ product, onAddToCart, uniqueKey }) => {
     }
   }
 
+  const handleToggleFavorite = async () => {
+    if (!isAuthenticated || !user) {
+      toast.error("Please log in to favorite products.");
+      return;
+    }
+
+    if (isTogglingFavorite) return;
+    setIsTogglingFavorite(true);
+
+    try {
+      const { data } = await productService.toggleFavorite(
+        product.id || product._id,
+      );
+      const updatedProduct = data?.product || {};
+      const favorites = Array.isArray(updatedProduct.favorites)
+        ? updatedProduct.favorites
+        : [];
+      setIsFavorite(favorites.includes(userId));
+      setFavoriteCount(
+        Number(
+          data?.favoritesCount ||
+            updatedProduct.favoritesCount ||
+            favorites.length ||
+            0,
+        ),
+      );
+    } catch (err) {
+      toast.error("Failed to update favorite.");
+    } finally {
+      setIsTogglingFavorite(false);
+    }
+  };
+
   return (
     <div key={uniqueKey} className="group">
       <div className="relative overflow-hidden rounded-xl aspect-square mb-4 bg-white dark:bg-gray-800 flex items-center justify-center">
@@ -101,12 +153,19 @@ const ProductCard = ({ product, onAddToCart, uniqueKey }) => {
             New
           </span>
         )}
-        <button
-          className="absolute top-3 right-3 z-10 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:text-red-500 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-          type="button"
-        >
-          <Heart size={18} />
-        </button>
+        {isAuthenticated && (
+          <button
+            className="absolute top-3 right-3 z-10 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:text-red-500 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-300 cursor-pointer"
+            type="button"
+            onClick={handleToggleFavorite}
+            aria-label="Toggle favorite"
+          >
+            <Heart
+              size={18}
+              className={isFavorite ? "fill-red-500 text-red-500" : ""}
+            />
+          </button>
+        )}
         <Link to={`/products/${product.id}`}>
           <img
             src={imgSrc}
@@ -144,6 +203,11 @@ const ProductCard = ({ product, onAddToCart, uniqueKey }) => {
             {rating}
           </span>
         </div>
+        {favoriteCount > 0 && (
+          <span className="text-xs text-gray-500 dark:text-gray-400 block">
+            {favoriteCount} favorites
+          </span>
+        )}
         <span className="font-semibold text-gray-900 dark:text-white">
           {isNaN(price) ? product.price : price.toFixed(2)} ETB
         </span>
