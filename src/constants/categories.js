@@ -1,4 +1,4 @@
-export const PRODUCT_CATEGORIES = [
+﻿export const PRODUCT_CATEGORIES = [
   "Textbooks",
   "Electronics",
   "Clothes",
@@ -6,3 +6,4 @@ export const PRODUCT_CATEGORIES = [
   "Dormitory",
   "Other",
 ];
+
