@@ -1,4 +1,4 @@
-const Spinner = ({ size = "md" }) => {
+﻿const Spinner = ({ size = "md" }) => {
   const sizeClasses = {
     sm: "w-4 h-4",
     md: "w-8 h-8",
@@ -15,3 +15,4 @@ const Spinner = ({ size = "md" }) => {
 };
 
 export default Spinner;
+
