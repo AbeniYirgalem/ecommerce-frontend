@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 
 export const Tabs = ({ children, value, onValueChange, className = "" }) => {
   return (
@@ -44,3 +44,4 @@ export const TabsTrigger = React.forwardRef(
     );
   }
 );
+
