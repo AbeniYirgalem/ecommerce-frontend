@@ -1,4 +1,4 @@
-// src/constants/routes.js
+﻿// src/constants/routes.js
 // Single source of truth for all client-side route paths.
 // Use these constants in <Link to={ROUTES.HOME}> and navigate(ROUTES.LOGIN) etc.
 
@@ -17,11 +17,10 @@ export const ROUTES = {
   RESET_PASSWORD: "/reset-password",
   SIGNUP_COMPLETE: "/signup/complete",
 
-  // Marketplace / Listings
-  LISTINGS: "/listings",
-  LISTING_DETAIL: "/listing/:id",
-  SIMILAR_ITEMS: "/similar/:id",
+  // Marketplace / products
+  PRODUCTS: "/products",
   PRODUCT_DETAIL: "/products/:id",
+  SIMILAR_ITEMS: "/similar/:id",
 
   // User
   PROFILE: "/profile",
@@ -30,26 +29,11 @@ export const ROUTES = {
   CHAT: "/chat",
 
   // Profile forms
-  PROFILE_STUDENT_CREATE: "/profile/student/create",
-  PROFILE_STUDENT_EDIT: "/profile/student/edit",
-  PROFILE_MERCHANT_CREATE: "/profile/merchant/create",
-  PROFILE_MERCHANT_EDIT: "/profile/merchant/edit",
-  PROFILE_TUTOR_CREATE: "/profile/tutor/create",
-  PROFILE_TUTOR_EDIT: "/profile/tutor/edit",
-
-  // Create listing
-  CREATE_LISTING: "/create",
+  // Create product
+  CREATE_PRODUCT: "/create",
 
   // Dashboard
   DASHBOARD: "/dashboard",
-  DASHBOARD_REDIRECT: "/dashboard-redirect",
-  STUDENT_DASHBOARD: "/student-dashboard",
-  MERCHANT_DASHBOARD: "/merchant-dashboard",
-  MERCHANT_PRODUCTS: "/merchant/products",
-  MERCHANT_EARNINGS: "/merchant/earnings",
-  TUTOR_DASHBOARD: "/tutor-dashboard",
-  ADMIN_DASHBOARD: "/admin-dashboard",
-  CAMPUS_ADMIN_DASHBOARD: "/campusadmindashboard",
 };
 
 export default ROUTES;
