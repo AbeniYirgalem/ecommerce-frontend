@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+﻿import { motion } from "framer-motion";
 import React from "react";
 
 export function CardContainer({ children, className = "" }) {
@@ -39,3 +39,4 @@ export function CardBody({ children, className = "" }) {
 export function CardItem({ children, className = "" }) {
   return <div className={`mb-4 ${className}`}>{children}</div>;
 }
+
