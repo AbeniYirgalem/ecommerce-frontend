@@ -1,5 +1,5 @@
-// src/constants/api.js
-// API endpoint path constants — centralizes all backend URL strings.
+﻿// src/constants/api.js
+// API endpoint path constants - centralizes all backend URL strings.
 
 export const API_ENDPOINTS = {
   // Auth
@@ -10,20 +10,15 @@ export const API_ENDPOINTS = {
   // Users
   PROFILE: "/api/users/profile",
   AVATAR: "/api/users/avatar",
-  FAVORITES: (listingId) => `/api/users/favorites/${listingId}`,
+  FAVORITES: (productId) => `/api/users/favorites/${productId}`,
 
-  // Listings
-  LISTINGS: "/api/listings",
-  LISTING_DETAIL: (id) => `/api/listings/${id}`,
+  // PRODUCTS
+  PRODUCTS: "/api/products",
+  PRODUCT_DETAIL: (id) => `/api/products/${id}`,
 
   // Reviews
   REVIEWS: "/api/reviews",
   REVIEW_DETAIL: (id) => `/api/reviews/${id}`,
-
-  // Admin
-  ADMIN_USERS: "/api/admin/users",
-  ADMIN_STATS: "/api/admin/stats",
-  ADMIN_LISTING_STATUS: (id) => `/api/admin/listings/${id}/status`,
 
   // Chatbot (legacy synchronous)
   CHAT: "/api/chat",
