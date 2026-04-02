@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Star } from "lucide-react";
 
 const testimonials = [
@@ -154,3 +154,4 @@ const TestimonialSection = () => {
 };
 
 export default TestimonialSection;
+
