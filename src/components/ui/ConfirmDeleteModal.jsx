@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+﻿import { motion, AnimatePresence } from "framer-motion";
 
 export default function ConfirmDeleteModal({
   isOpen,
@@ -21,7 +21,9 @@ export default function ConfirmDeleteModal({
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 40 }}
           >
-            <div className="text-3xl mb-2 text-red-600">⚠️</div>
+            <div className="text-3xl mb-2 text-red-600" aria-label="Warning">
+              !
+            </div>
             <h2 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">
               Confirm Deletion
             </h2>
