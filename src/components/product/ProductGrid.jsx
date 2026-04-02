@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import ProductCard from "./ProductCard";
 
 // Pagination component
@@ -151,3 +151,4 @@ const ProductGrid = ({
 };
 
 export default ProductGrid;
+
