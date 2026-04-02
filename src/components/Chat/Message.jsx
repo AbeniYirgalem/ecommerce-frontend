@@ -1,4 +1,4 @@
-// src/components/Chat/Message.jsx
+﻿// src/components/Chat/Message.jsx
 import React from "react";
 
 const Message = ({ sender, content, timestamp }) => {
@@ -12,3 +12,4 @@ const Message = ({ sender, content, timestamp }) => {
 };
 
 export default Message;
+
