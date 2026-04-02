@@ -1,4 +1,4 @@
-
+﻿
 const GlobalSpinner = () => {
   return (
     <div className="fixed inset-0 bg-white dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-75 flex justify-center items-center z-50">
@@ -32,3 +32,4 @@ const GlobalSpinner = () => {
 };
 
 export default GlobalSpinner;
+
