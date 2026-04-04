@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserProfile } from "../redux/slices/authSlice";
@@ -415,3 +415,4 @@ function Account() {
 }
 
 export default Account;
+
