@@ -1,4 +1,4 @@
-// src/hooks/useProfiles.js
+﻿// src/hooks/useProfiles.js
 // Custom hook for managing user profiles (student, merchant, tutor, campus_admin).
 // Import paths updated to new canonical locations.
 import { useState } from "react";
@@ -162,3 +162,4 @@ const useProfiles = (profileType) => {
 };
 
 export default useProfiles;
+
