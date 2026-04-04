@@ -1,4 +1,4 @@
-// src/layouts/MainLayout.jsx
+﻿// src/layouts/MainLayout.jsx
 // The primary public-facing layout: Navbar on top, Footer at bottom.
 // Wrap any public page with <MainLayout> to get consistent chrome.
 
@@ -21,3 +21,4 @@ export default function MainLayout({ children }) {
     </div>
   );
 }
+
