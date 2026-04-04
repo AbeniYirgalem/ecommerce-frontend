@@ -1,6 +1,6 @@
-// src/layouts/AuthLayout.jsx
+﻿// src/layouts/AuthLayout.jsx
 // Minimal centered layout for auth pages (login, signup, password reset).
-// No Navbar or Footer — keeps the focus on the auth form.
+// No Navbar or Footer - keeps the focus on the auth form.
 
 import ScrollToTop from "../components/ScrollToTop";
 
