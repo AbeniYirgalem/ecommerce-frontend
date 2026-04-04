@@ -1,28 +1,32 @@
 // src/hooks/useChatQueue.js
-// ─────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 // Custom hook that manages the full lifecycle of an async chatbot message:
 //
-//   1. User sends message → addMessage() enqueues it via POST /api/chat/queue
+//   1. User sends message -> addMessage() enqueues it via POST /api/chat/queue
 //   2. Message appears immediately in the chat as a "user" bubble
 //   3. A "bot typing" placeholder is shown while the job runs
 //   4. A polling loop calls GET /api/chat/status/:jobId every POLL_INTERVAL ms
-//   5. When status === "completed" → replace placeholder with the AI reply
-//   6. When status === "failed"    → replace placeholder with an error message
-//   7. If MAX_POLL_TIME elapses    → show a timeout error
+//   5. When status === "completed" -> replace placeholder with the AI reply
+//   6. When status === "failed"    -> replace placeholder with an error message
+//   7. If MAX_POLL_TIME elapses    -> show a timeout error
 //
-// This hook is PURELY about state + async logic — no JSX inside.
-// ─────────────────────────────────────────────────────────────────────────
+// This hook is PURELY about state + async logic - no JSX inside.
+// -----------------------------------------------------------------------------
 
 import { useState, useRef, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { sendMessageAsync, pollJobStatus, sendMessageSync } from "../services/chat.service";
+import {
+  sendMessageAsync,
+  pollJobStatus,
+  sendMessageSync,
+} from "../services/chat.service";
 
-// ── Polling configuration ──────────────────────────────────────────────────
-const POLL_INTERVAL_MS   = 1500;  // check every 1.5 s
-const MAX_POLL_TIME_MS   = 60_000; // give up after 60 s
-const TERMINAL_STATUSES  = new Set(["completed", "failed"]);
+// --- Polling configuration ---------------------------------------------------
+const POLL_INTERVAL_MS = 1500; // check every 1.5 s
+const MAX_POLL_TIME_MS = 60_000; // give up after 60 s
+const TERMINAL_STATUSES = new Set(["completed", "failed"]);
 
-// ── Unique ID generator for message list keys ──────────────────────────────
+// --- Unique ID generator for message list keys ------------------------------
 let _uid = 0;
 const uid = () => `msg_${Date.now()}_${++_uid}`;
 
@@ -44,13 +48,15 @@ const useChatQueue = () => {
   const [messages, setMessages] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Active polling timers — stored in a ref so we can cancel on unmount
-  const pollTimersRef = useRef(new Map()); // jobId → { intervalId, timeoutId }
+  // Active polling timers - stored in a ref so we can cancel on unmount
+  const pollTimersRef = useRef(new Map()); // jobId -> { intervalId, timeoutId }
 
-  // Read logged-in userId from Redux (optional — falls back to "anonymous")
-  const userId = useSelector((state) => state.auth?.user?._id || state.auth?.user?.id);
+  // Read logged-in userId from Redux (optional - falls back to "anonymous")
+  const userId = useSelector(
+    (state) => state.auth?.user?._id || state.auth?.user?.id,
+  );
 
-  // ── helpers ───────────────────────────────────────────────────────────────
+  // --- helpers ---------------------------------------------------------------
 
   const appendMessage = useCallback((msg) => {
     setMessages((prev) => [...prev, msg]);
@@ -71,13 +77,13 @@ const useChatQueue = () => {
     }
   }, []);
 
-  // ── polling logic ─────────────────────────────────────────────────────────
+  // --- polling logic --------------------------------------------------------
 
   /**
-   * startPolling — repeatedly calls pollJobStatus until the job is done.
+   * startPolling - repeatedly calls pollJobStatus until the job is done.
    *
    * @param {string} jobId         - The BullMQ job ID to poll
-   * @param {string} placeholderId - The "typing…" message ID to replace
+   * @param {string} placeholderId - The "typing..." message ID to replace
    */
   const startPolling = useCallback(
     (jobId, placeholderId) => {
@@ -87,7 +93,7 @@ const useChatQueue = () => {
 
           if (!TERMINAL_STATUSES.has(status)) return; // still waiting / active
 
-          // ── Job completed ─────────────────────────────────────────────────
+          // --- Job completed -------------------------------------------------
           cancelPolling(jobId);
 
           if (status === "completed" && result) {
@@ -109,12 +115,12 @@ const useChatQueue = () => {
 
           setIsProcessing(false);
         } catch (err) {
-          // Network error during polling — don't stop yet, keep trying
+          // Network error during polling - don't stop yet, keep trying
           console.warn("[useChatQueue] polling error:", err.message);
         }
       }, POLL_INTERVAL_MS);
 
-      // Safety timeout — give up if job takes too long
+      // Safety timeout - give up if job takes too long
       const timeoutId = setTimeout(() => {
         cancelPolling(jobId);
         replaceMessage(placeholderId, {
@@ -129,15 +135,15 @@ const useChatQueue = () => {
     [cancelPolling, replaceMessage],
   );
 
-  // ── public API ────────────────────────────────────────────────────────────
+  // --- public API -----------------------------------------------------------
 
   /**
-   * addMessage — the main entry point called when a user sends a message.
+   * addMessage - the main entry point called when a user sends a message.
    *
    * Flow:
    *   1. Optimistically append user bubble
    *   2. Append "typing" placeholder for the bot
-   *   3. POST /api/chat/queue → get jobId
+   *   3. POST /api/chat/queue -> get jobId
    *   4. Start polling until job completes
    *   5. Replace typing bubble with actual result (or error)
    *
@@ -150,7 +156,7 @@ const useChatQueue = () => {
 
       setIsProcessing(true);
 
-      // ── Step 1: Show user message immediately ─────────────────────────────
+      // --- Step 1: Show user message immediately ---------------------------
       const userMsgId = uid();
       appendMessage({
         id: userMsgId,
@@ -159,7 +165,7 @@ const useChatQueue = () => {
         text: trimmed,
       });
 
-      // ── Step 2: Show "typing…" placeholder ───────────────────────────────
+      // --- Step 2: Show "typing..." placeholder ----------------------------
       const placeholderId = uid();
       appendMessage({
         id: placeholderId,
@@ -168,16 +174,16 @@ const useChatQueue = () => {
         text: "",
       });
 
-      // ── Step 3: Enqueue the job ───────────────────────────────────────────
+      // --- Step 3: Enqueue the job -----------------------------------------
       try {
         const { jobId } = await sendMessageAsync(trimmed, userId);
 
-        // ── Step 4: Poll until done ────────────────────────────────────────
+        // --- Step 4: Poll until done ---------------------------------------
         startPolling(jobId, placeholderId);
       } catch (queueErr) {
         console.error("[useChatQueue] queue path failed:", queueErr.message);
 
-        // ── Fallback: synchronous call ─────────────────────────────────────
+        // --- Fallback: synchronous call ------------------------------------
         try {
           const syncResult = await sendMessageSync(trimmed);
           replaceMessage(placeholderId, {
@@ -202,7 +208,7 @@ const useChatQueue = () => {
   );
 
   /**
-   * clearMessages — wipe the chat history (used when the chat widget closes).
+   * clearMessages - wipe the chat history (used when the chat widget closes).
    */
   const clearMessages = useCallback(() => {
     // Cancel any pending polls before clearing
