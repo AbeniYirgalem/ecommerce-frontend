@@ -1,4 +1,4 @@
-// src/hooks/useTheme.js
+﻿// src/hooks/useTheme.js
 // Encapsulates dark / light mode toggle logic that previously lived in App.jsx.
 // Reads from and writes to localStorage and toggles the "dark" class on <html>.
 
@@ -36,3 +36,4 @@ export const useTheme = () => {
 };
 
 export default useTheme;
+
