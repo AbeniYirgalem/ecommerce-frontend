@@ -1,4 +1,4 @@
-// src/layouts/DashboardLayout.jsx
+﻿// src/layouts/DashboardLayout.jsx
 // Shared shell for all dashboard pages (student, merchant, tutor, admin).
 // Pages that need a dashboard frame should wrap themselves with this layout.
 
@@ -20,3 +20,4 @@ export default function DashboardLayout({ children, sidebar }) {
     </div>
   );
 }
+
