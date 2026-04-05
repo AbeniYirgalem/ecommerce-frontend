@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { motion } from "framer-motion"; // Import motion
 import {
   Upload,
@@ -45,7 +45,7 @@ function HomePage() {
           </p>
           <motion.custom // Wrap Link with motion.custom
             component={Link} // Specify the component to render
-            to="/listings"
+            to="/products"
             className="relative inline-flex items-center justify-center px-10 py-3 rounded-full text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-white shadow-xl transition-all duration-300 hover:scale-105 hover:from-blue-700 hover:to-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300/40 group overflow-hidden"
             whileHover={{ scale: 1.1 }} // Add hover animation
             transition={{ type: "spring", stiffness: 400, damping: 10 }} // Add transition
@@ -65,7 +65,7 @@ function HomePage() {
                   d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6"
                 />
               </svg>
-             <Link to="/listings"> Start Browsing</Link>
+             <Link to="/products"> Start Browsing</Link>
             </span>
           </motion.custom>
         </div>
@@ -127,7 +127,7 @@ function HomePage() {
                 icon: <Upload className="w-16 h-16 text-blue-600 mx-auto" />,
               },
               {
-                title: "Browse Listings",
+                title: "Browse PRODUCTS",
                 desc: "Find academic materials, tutors, or even part-time jobs.",
                 icon: <Search className="w-16 h-16 text-blue-600 mx-auto" />,
               },
@@ -180,3 +180,4 @@ export default HomePage;
   }
 }
 */
+
