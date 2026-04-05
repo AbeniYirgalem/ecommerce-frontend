@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import api from "../lib/axios";
 import { addToCart } from "../redux/slices/cartSlice";
-import { FiShoppingCart, FiArrowLeft, FiPhone } from "react-icons/fi";
+import { FiShoppingCart, FiArrowLeft, FiPhone, FiHeart } from "react-icons/fi";
+import productService from "../services/product.service";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -18,6 +19,11 @@ const ProductDetail = () => {
   const [reviewError, setReviewError] = useState("");
   const [editingReview, setEditingReview] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [similarProducts, setSimilarProducts] = useState([]);
+  const [similarLoading, setSimilarLoading] = useState(false);
+  const [favoriteCount, setFavoriteCount] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
 
   const dispatch = useDispatch();
   const {
@@ -26,6 +32,7 @@ const ProductDetail = () => {
     isAuthenticated,
     loading: authLoading,
   } = useSelector((state) => state.auth);
+  const userId = user?._id || user?.id;
 
   // Generate a random views count for demo purposes
   const [views] = useState(() => Math.floor(Math.random() * 900 + 100));
@@ -173,6 +180,13 @@ const ProductDetail = () => {
       try {
         const res = await api.get(`/api/products/${id}`);
         setProduct(res.data);
+        const favorites = Array.isArray(res.data?.favorites)
+          ? res.data.favorites
+          : [];
+        setIsFavorite(userId ? favorites.includes(userId) : false);
+        setFavoriteCount(
+          Number(res.data?.favoritesCount || favorites.length || 0),
+        );
       } catch (err) {
         const message =
           err.response?.data?.message ||
@@ -185,7 +199,62 @@ const ProductDetail = () => {
     };
 
     fetchProduct();
+  }, [id, userId]);
+
+  useEffect(() => {
+    const fetchSimilarProducts = async () => {
+      try {
+        setSimilarLoading(true);
+        const { data } = await api.get(`/api/products/${id}/similar`);
+        setSimilarProducts(Array.isArray(data?.products) ? data.products : []);
+      } catch (err) {
+        setSimilarProducts([]);
+      } finally {
+        setSimilarLoading(false);
+      }
+    };
+
+    fetchSimilarProducts();
   }, [id]);
+
+  useEffect(() => {
+    if (!product) return;
+    const favorites = Array.isArray(product.favorites) ? product.favorites : [];
+    setIsFavorite(userId ? favorites.includes(userId) : false);
+    setFavoriteCount(Number(product.favoritesCount || favorites.length || 0));
+  }, [product, userId]);
+
+  const handleToggleFavorite = async () => {
+    if (!isAuthenticated || !user) {
+      setReviewError("Please log in to favorite products");
+      return;
+    }
+
+    if (isTogglingFavorite) return;
+    setIsTogglingFavorite(true);
+
+    try {
+      const { data } = await productService.toggleFavorite(id);
+      const updatedProduct = data?.product || {};
+      setProduct((prev) => ({ ...prev, ...updatedProduct }));
+      const favorites = Array.isArray(updatedProduct.favorites)
+        ? updatedProduct.favorites
+        : [];
+      setIsFavorite(favorites.includes(userId));
+      setFavoriteCount(
+        Number(
+          data?.favoritesCount ||
+            updatedProduct.favoritesCount ||
+            favorites.length ||
+            0,
+        ),
+      );
+    } catch (err) {
+      setReviewError("Failed to update favorite");
+    } finally {
+      setIsTogglingFavorite(false);
+    }
+  };
 
   useEffect(() => {
     if (product) {
@@ -234,10 +303,10 @@ const ProductDetail = () => {
       <div className="flex flex-col items-center justify-center h-96 text-red-500 dark:text-red-400">
         <p className="mb-4 text-lg font-semibold">{error}</p>
         <Link
-          to="/listings"
+          to="/products"
           className="text-blue-600 dark:text-blue-400 underline cursor-pointer"
         >
-          Back to Listings
+          Back to PRODUCTS
         </Link>
       </div>
     );
@@ -326,6 +395,19 @@ const ProductDetail = () => {
               <span className="text-3xl font-bold text-blue-700 dark:text-blue-300">
                 {product.price} ETB
               </span>
+              <button
+                type="button"
+                onClick={handleToggleFavorite}
+                className={`flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold transition ${
+                  isFavorite
+                    ? "border-red-500 text-red-500"
+                    : "border-gray-300 text-gray-600 dark:text-gray-300"
+                }`}
+                aria-label="Toggle favorite"
+              >
+                <FiHeart className={isFavorite ? "fill-red-500" : ""} />
+                {favoriteCount}
+              </button>
             </div>
             {(getSellerName() || getSellerEmail() || getPhoneNumber()) && (
               <div className="mt-2 bg-gray-900/50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 text-sm text-gray-700 dark:text-gray-200">
@@ -391,11 +473,11 @@ const ProductDetail = () => {
               </a>
             )}
             <Link
-              to="/listings"
+              to="/products"
               className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors cursor-pointer text-base shadow flex items-center gap-2"
             >
               <FiArrowLeft className="w-5 h-5" />
-              Back to Listings
+              Back to PRODUCTS
             </Link>
           </div>
         </div>
@@ -554,6 +636,60 @@ const ProductDetail = () => {
               sign in
             </Link>{" "}
             to write a review.
+          </div>
+        )}
+      </div>
+
+      <div className="max-w-4xl mx-auto mb-12">
+        <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white border-b pb-2 dark:border-gray-700">
+          Similar Products
+        </h3>
+
+        {similarLoading ? (
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 text-gray-600 dark:text-gray-300">
+            Loading similar products...
+          </div>
+        ) : similarProducts.length === 0 ? (
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400">
+            No similar products found.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {similarProducts.map((item) => {
+              const similarId = item._id || item.id;
+              const similarImage =
+                item.imageUrl || item.images?.[0] || FALLBACK_IMAGE;
+
+              return (
+                <article
+                  key={similarId}
+                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden"
+                >
+                  <img
+                    src={similarImage}
+                    alt={item.title}
+                    className="w-full h-44 object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = FALLBACK_IMAGE;
+                    }}
+                  />
+                  <div className="p-4">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
+                      {item.title}
+                    </h4>
+                    <p className="mt-2 text-blue-600 dark:text-blue-300 font-bold">
+                      {Number(item.price || 0).toLocaleString()} ETB
+                    </p>
+                    <Link
+                      to={`/products/${similarId}`}
+                      className="inline-block mt-3 text-sm font-medium text-blue-600 dark:text-blue-300 hover:underline"
+                    >
+                      View Details
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         )}
       </div>
