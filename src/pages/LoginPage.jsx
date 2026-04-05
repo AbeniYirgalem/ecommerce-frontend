@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -9,75 +9,6 @@ import {
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import Alert from "../components/ui/Alert";
 import Spinner from "../components/ui/Spinner";
-import api from "../redux/api/uniBazzarApi"; // Import the API client
-
-// Using the api client instead of fetch
-const checkMerchantProfile = async (userId) => {
-  // Using the correct endpoint format with a query parameter
-  const url = `/api/users/merchant-profiles?user=${userId}`;
-  try {
-    // Use the api client that has proper auth and base URL configuration
-    const response = await api.get(url);
-
-    // For API client, we need to check the response data directly
-    if (response.status >= 200 && response.status < 300) {
-      const data = response.data;
-
-      // If the response is an array and has at least one item, the profile exists
-      if (Array.isArray(data) && data.length > 0) {
-        return true;
-      }
-
-      // If the response has results and there are items, the profile exists (paginated response)
-      if (data && data.results && data.results.length > 0) {
-        return true;
-      }
-
-      // Otherwise, even though the request succeeded, no profile data exists
-      return false;
-    }
-
-    if (response.status === 404) {
-      return false; // Profile does not exist
-    }
-
-    // Handle other non-OK statuses as errors
-    throw new Error(`HTTP error! status: ${response.status}`);
-  } catch (error) {
-    // Check error response
-    if (error.response && error.response.status === 404) {
-      return false; // API client will throw for 404, but we want to handle it as "no profile"
-    }
-    throw error; // Re-throw to be caught in the component
-  }
-};
-
-// Check if tutor profile exists for a user ID
-const checkTutorProfile = async (userId) => {
-  const url = `/api/users/tutor-profiles?user=${userId}`;
-  try {
-    const response = await api.get(url);
-    if (response.status >= 200 && response.status < 300) {
-      const data = response.data;
-      if (Array.isArray(data) && data.length > 0) {
-        return true;
-      }
-      if (data && data.results && data.results.length > 0) {
-        return true;
-      }
-      return false;
-    }
-    if (response.status === 404) {
-      return false;
-    }
-    throw new Error(`HTTP error! status: ${response.status}`);
-  } catch (error) {
-    if (error.response && error.response.status === 404) {
-      return false;
-    }
-    throw error;
-  }
-};
 
 function LoginPage() {
   const dispatch = useDispatch();
@@ -121,72 +52,14 @@ function LoginPage() {
   useEffect(() => {
     const handleRedirect = async () => {
       if (isAuthenticated && user && token) {
-        // Set checking profile state to show loading spinner
         setIsCheckingProfile(true);
         setSuccessMessage("");
 
         try {
-          // Variables for profile existence checks
-          let profileExists = false;
-
-          // --- Handle redirect based on user role ---
-          switch (user.role) {
-            case "merchant":
-              // Check if merchant has a profile
-              profileExists = await checkMerchantProfile(user.id);
-
-              if (profileExists) {
-                setSuccessMessage("Successfully Logged In");
-                navigate("/merchant-dashboard", { replace: true });
-              } else {
-                setSuccessMessage(
-                  "Login successful! Please complete your merchant profile.",
-                );
-                navigate("/profile/merchant/create", { replace: true });
-              }
-              break;
-
-            case "student":
-              setSuccessMessage("Successfully Logged In");
-              navigate("/listings", { replace: true });
-              break;
-
-            case "tutor":
-              // Check if tutor has a profile
-              profileExists = await checkTutorProfile(user.id);
-
-              if (profileExists) {
-                setSuccessMessage("Successfully Logged In");
-                navigate("/tutor-dashboard", { replace: true });
-              } else {
-                setSuccessMessage(
-                  "Login successful! Please complete your tutor profile.",
-                );
-                navigate("/profile/tutor/create", { replace: true });
-              }
-              break;
-
-            case "campus_admin":
-              // Check if the user has a profile using profile_id from user object
-              if (user.profile_id) {
-                setSuccessMessage("Successfully Logged In");
-                navigate("/listings", { replace: true });
-              } else {
-                setSuccessMessage(
-                  "Login successful! Please complete your campus admin profile.",
-                );
-                navigate("/profile/campus-admin/create", { replace: true });
-              }
-              break;
-
-            default:
-              // Default redirection for other roles or no role
-              navigate("/listings", { replace: true });
-          }
+          setSuccessMessage("Successfully Logged In");
+          navigate("/dashboard", { replace: true });
         } catch (error) {
-          setErrorMessage(
-            "Could not verify profile status. Please try again later.",
-          );
+          setErrorMessage("Login completed but redirect failed. Please retry.");
         } finally {
           setIsCheckingProfile(false);
         }
@@ -391,3 +264,4 @@ function LoginPage() {
 }
 
 export default LoginPage;
+
