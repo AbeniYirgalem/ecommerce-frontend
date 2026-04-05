@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import api from "../redux/api/uniBazzarApi";
 
@@ -7,7 +7,10 @@ export default function ResetPasswordPage() {
   const navigate = useNavigate();
   const token = searchParams.get("token");
 
-  const [formData, setFormData] = useState({ password: "", confirmPassword: "" });
+  const [formData, setFormData] = useState({
+    password: "",
+    confirmPassword: "",
+  });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -33,7 +36,7 @@ export default function ResetPasswordPage() {
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          "Reset failed. The link may have expired."
+          "Reset failed. The link may have expired.",
       );
     } finally {
       setLoading(false);
@@ -44,9 +47,13 @@ export default function ResetPasswordPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-10 text-center">
-          <div className="text-5xl mb-4">⚠️</div>
+          <div className="text-5xl mb-4" aria-hidden="true">
+            &#9888;
+          </div>
           <h2 className="text-xl font-bold text-red-600 mb-2">Invalid Link</h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">No reset token found in the URL.</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-4">
+            No reset token found in the URL.
+          </p>
           <Link to="/forgot-password" className="text-blue-600 hover:underline">
             Request a new reset link
           </Link>
@@ -60,7 +67,9 @@ export default function ResetPasswordPage() {
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-10 w-full max-w-md">
         {success ? (
           <div className="text-center">
-            <div className="text-6xl mb-4">🎉</div>
+            <div className="text-6xl mb-4" aria-hidden="true">
+              &#127881;
+            </div>
             <h2 className="text-2xl font-bold text-green-600 dark:text-green-400 mb-3">
               Password Reset!
             </h2>
@@ -123,12 +132,15 @@ export default function ResetPasswordPage() {
                 disabled={loading}
                 className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold py-3 rounded-lg transition"
               >
-                {loading ? "Resetting…" : "Reset Password"}
+                {loading ? "Resetting..." : "Reset Password"}
               </button>
             </form>
 
             <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-              <Link to="/forgot-password" className="text-blue-600 hover:underline">
+              <Link
+                to="/forgot-password"
+                className="text-blue-600 hover:underline"
+              >
                 Request a new link
               </Link>
             </p>
