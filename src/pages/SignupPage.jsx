@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -28,7 +28,6 @@ function SignUpPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "student",
   });
   const [errorMessage, setErrorMessage] = useState("");
   const [verificationMessage, setVerificationMessage] = useState("");
@@ -46,9 +45,7 @@ function SignUpPage() {
   // If already authenticated, keep user in-app; otherwise remain here
   useEffect(() => {
     if (isAuthenticated && user) {
-      const redirectPath =
-        user.role === "merchant" ? "/merchant-dashboard" : "/listings";
-      navigate(redirectPath);
+      navigate("/dashboard");
     }
   }, [isAuthenticated, user, navigate]);
 
@@ -62,7 +59,6 @@ function SignUpPage() {
       // Save the user data to localStorage for later use
       const userData = {
         email: formData.email,
-        role: formData.role,
       };
 
       // If registration response includes user_id, store it
@@ -87,7 +83,7 @@ function SignUpPage() {
         state: { message: "Please verify your email before logging in." },
       });
     }
-  }, [registrationSuccess, navigate, formData.email, formData.role]);
+  }, [registrationSuccess, navigate, formData.email]);
 
   // Handle API errors
   useEffect(() => {
@@ -143,7 +139,6 @@ function SignUpPage() {
         email: formData.email,
         password: formData.password,
         confirm_password: formData.confirmPassword, // backend may or may not need this
-        role: formData.role,
       };
 
       await dispatch(registerUser(apiData));
@@ -325,48 +320,6 @@ function SignUpPage() {
             </div>
 
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
-                Account Type
-              </label>
-              <div className="grid grid-cols-2 gap-4">
-                <label
-                  className={`flex items-center justify-center p-3 border rounded-md cursor-pointer transition-colors ${
-                    formData.role === "student"
-                      ? "bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
-                      : "bg-white border-gray-300 text-gray-600 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="role"
-                    value="student"
-                    className="sr-only"
-                    checked={formData.role === "student"}
-                    onChange={handleChange}
-                  />
-                  <span>Student</span>
-                </label>
-                <label
-                  className={`flex items-center justify-center p-3 border rounded-md cursor-pointer transition-colors ${
-                    formData.role === "merchant"
-                      ? "bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
-                      : "bg-white border-gray-300 text-gray-600 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="role"
-                    value="merchant"
-                    className="sr-only"
-                    checked={formData.role === "merchant"}
-                    onChange={handleChange}
-                  />
-                  <span>Merchant</span>
-                </label>
-              </div>
-            </div>
-
-            <div>
               <button
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md font-semibold flex justify-center items-center transition duration-300 shadow-md cursor-pointer"
@@ -400,3 +353,4 @@ function SignUpPage() {
 }
 
 export default SignUpPage;
+
