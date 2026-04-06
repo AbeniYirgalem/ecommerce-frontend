@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../redux/api/uniBazzarApi";
 
@@ -44,14 +44,16 @@ export default function VerifyEmailPage() {
           <>
             <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-6"></div>
             <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-              Verifying your email…
+              Verifying your email...
             </h2>
           </>
         )}
 
         {status === "success" && (
           <>
-            <div className="text-6xl mb-4">✅</div>
+            <div className="text-6xl mb-4" aria-hidden="true">
+              &#10003;
+            </div>
             <h2 className="text-2xl font-bold text-green-600 dark:text-green-400 mb-3">
               Email Verified!
             </h2>
@@ -72,7 +74,9 @@ export default function VerifyEmailPage() {
 
         {status === "error" && (
           <>
-            <div className="text-6xl mb-4">❌</div>
+            <div className="text-6xl mb-4" aria-hidden="true">
+              &#10007;
+            </div>
             <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-3">
               Verification Failed
             </h2>
