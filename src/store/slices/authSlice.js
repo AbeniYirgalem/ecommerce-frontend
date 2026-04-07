@@ -1,4 +1,4 @@
-// src/store/slices/authSlice.js
+﻿// src/store/slices/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import authService from "../../services/auth.service";
 
@@ -197,3 +197,4 @@ const authSlice = createSlice({
 
 export const { clearError, clearRegistrationSuccess } = authSlice.actions;
 export default authSlice.reducer;
+
