@@ -1,5 +1,5 @@
-// src/store/slices/favoriteSlice.js
-// Moved from src/redux/slices/favoriteSlice.js — no import changes needed.
+﻿// src/store/slices/favoriteSlice.js
+// Moved from src/redux/slices/favoriteSlice.js - no import changes needed.
 import { createSlice } from "@reduxjs/toolkit";
 
 const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
