@@ -1,5 +1,5 @@
-// src/services/auth.service.js
-// Authentication API calls — thin wrappers over the Axios instance.
+﻿// src/services/auth.service.js
+// Authentication API calls -- thin wrappers over the Axios instance.
 // Redux slices can import these instead of calling api.post() directly.
 
 import api from "../lib/axios";
