@@ -1,4 +1,4 @@
-// src/services/product.service.js
+﻿// src/services/product.service.js
 // Product API service.
 
 import api from "../lib/axios";
@@ -18,6 +18,9 @@ export const productService = {
 
   /** Delete a product. */
   remove: (id) => api.delete(`/api/products/${id}`),
+
+  /** Toggle favorite for a product. */
+  toggleFavorite: (id) => api.post(`/api/products/${id}/favorite`),
 };
 
 export default productService;
