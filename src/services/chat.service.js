@@ -1,24 +1,24 @@
-// src/services/chat.service.js
-// ─────────────────────────────────────────────────────────────────────────
+﻿// src/services/chat.service.js
+// -----------------------------------------------------------------------------
 // API layer for chatbot communication with the BullMQ backlog system.
 //
 // Two paths are available:
-//   1. sendMessageAsync()   → POST /api/chat/queue  (async, returns jobId)
-//   2. pollJobStatus()      → GET  /api/chat/status/:jobId
-//   3. sendMessageSync()    → POST /api/chat  (legacy synchronous fallback)
+//   1. sendMessageAsync()   -> POST /api/chat/queue  (async, returns jobId)
+//   2. pollJobStatus()      -> GET  /api/chat/status/:jobId
+//   3. sendMessageSync()    -> POST /api/chat  (legacy synchronous fallback)
 //
 // All functions use the shared `api` Axios instance which attaches JWT tokens
 // and handles retries automatically via its interceptors.
-// ─────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 
 import api from "../lib/axios";
 import { API_ENDPOINTS } from "../constants/api";
 
 /**
  * sendMessageAsync
- * ────────────────
+ * ---------------------------------------------------------------------------
  * Enqueues a chatbot message in the BullMQ queue.
- * Returns immediately with a jobId — does NOT wait for the AI response.
+ * Returns immediately with a jobId; does not wait for the AI response.
  *
  * @param {string} message  - The user's message text
  * @param {string} [userId] - Optional user ID to tag the job (e.g. from Redux auth)
@@ -42,7 +42,7 @@ export const sendMessageAsync = async (message, userId, priority = 5) => {
 
 /**
  * pollJobStatus
- * ─────────────
+ * ---------------------------------------------------------------------------
  * Fetches the current status and (when done) the result of a queued job.
  *
  * @param {string} jobId  - The job ID returned by sendMessageAsync
@@ -64,7 +64,7 @@ export const pollJobStatus = async (jobId) => {
 
 /**
  * sendMessageSync (legacy fallback)
- * ─────────────────────────────────
+ * ---------------------------------------------------------------------------
  * Calls the original synchronous endpoint. Use this only when Redis is
  * unavailable or as a fallback when the queue endpoint fails.
  *
