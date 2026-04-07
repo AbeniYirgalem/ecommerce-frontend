@@ -1,4 +1,4 @@
-// src/services/user.service.js
+﻿// src/services/user.service.js
 // User profile API service.
 
 import api from "../lib/axios";
@@ -10,12 +10,12 @@ export const userService = {
 
   /** Update user profile. */
   updateProfile: (data) => api.put(API_ENDPOINTS.PROFILE, data),
-  
+
   /** Update user avatar. */
   updateAvatar: (formData) => api.put(API_ENDPOINTS.AVATAR, formData),
-  
-  /** Toggle favorite listing. */
-  toggleFavorite: (listingId) => api.post(API_ENDPOINTS.FAVORITES(listingId)),
+
+  /** Toggle favorite product. */
+  toggleFavorite: (productId) => api.post(API_ENDPOINTS.FAVORITES(productId)),
 };
 
 export default userService;
