@@ -1,5 +1,5 @@
-// src/store/slices/cartSlice.js
-// Moved from src/redux/slices/cartSlice.js — no import changes needed (no API calls).
+﻿// src/store/slices/cartSlice.js
+// Moved from src/redux/slices/cartSlice.js - no import changes needed (no API calls).
 import { createSlice } from "@reduxjs/toolkit";
 
 const storedCart = JSON.parse(localStorage.getItem("cart"));
