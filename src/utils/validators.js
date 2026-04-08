@@ -1,4 +1,4 @@
-// src/utils/validators.js
+﻿// src/utils/validators.js
 // Reusable form validation helper functions.
 
 /**
@@ -56,3 +56,4 @@ export const isPositiveNumber = (value) => {
   const num = parseFloat(value);
   return !isNaN(num) && num > 0;
 };
+
