@@ -160,31 +160,24 @@ function CreateProductPage() {
           </div>
         )}
 
-        {/* Name (Title) - Not for Tutors */}
-        {user?.role !== "tutor" && (
-          <div>
-            <label
-              htmlFor="name"
-              className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Name / Title
-            </label>
-            <input
-              type="text"
-              name="name"
-              id="name"
-              placeholder={
-                user?.role === "student"
-                  ? "e.g., Used Physics Textbook"
-                  : "e.g., Graphic Design Services"
-              }
-              value={formData.name}
-              onChange={handleChange}
-              className="border p-3 w-full rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-              required={user?.role !== "tutor"}
-            />
-          </div>
-        )}
+        <div>
+          <label
+            htmlFor="name"
+            className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
+            Name / Title
+          </label>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            placeholder="e.g., Used Physics Textbook"
+            value={formData.name}
+            onChange={handleChange}
+            className="border p-3 w-full rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
 
         {/* Price */}
         <div>
@@ -242,11 +235,7 @@ function CreateProductPage() {
           <textarea
             name="description"
             id="description"
-            placeholder={
-              user?.role === "tutor"
-                ? "Describe your tutoring service, subjects, availability..."
-                : "Write a brief description..."
-            }
+            placeholder="Write a brief description..."
             value={formData.description}
             onChange={handleChange}
             className="border p-3 w-full rounded-md h-32 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
@@ -274,51 +263,45 @@ function CreateProductPage() {
           />
         </div>
 
-        {/* Tags - Not for Tutors */}
-        {user?.role !== "tutor" && (
-          <div>
-            <label
-              htmlFor="tags"
-              className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Tags (comma-separated)
-            </label>
-            <input
-              type="text"
-              name="tags"
-              id="tags"
-              placeholder="e.g., physics, semester1, engineering"
-              value={formData.tags}
-              onChange={handleChange}
-              className="border p-3 w-full rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-        )}
+        <div>
+          <label
+            htmlFor="tags"
+            className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
+            Tags (comma-separated)
+          </label>
+          <input
+            type="text"
+            name="tags"
+            id="tags"
+            placeholder="e.g., physics, semester1, engineering"
+            value={formData.tags}
+            onChange={handleChange}
+            className="border p-3 w-full rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
 
-        {/* Condition - Only for Students */}
-        {user?.role === "student" && (
-          <div>
-            <label
-              htmlFor="condition"
-              className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Condition
-            </label>
-            <select
-              name="condition"
-              id="condition"
-              value={formData.condition}
-              onChange={handleChange}
-              className="border p-3 w-full rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-              required
-            >
-              <option value="new">New</option>
-              <option value="used_like_new">Used - Like New</option>
-              <option value="used_good">Used - Good</option>
-              <option value="used_fair">Used - Fair</option>
-            </select>
-          </div>
-        )}
+        <div>
+          <label
+            htmlFor="condition"
+            className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
+            Condition
+          </label>
+          <select
+            name="condition"
+            id="condition"
+            value={formData.condition}
+            onChange={handleChange}
+            className="border p-3 w-full rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+            required
+          >
+            <option value="new">New</option>
+            <option value="used_like_new">Used - Like New</option>
+            <option value="used_good">Used - Good</option>
+            <option value="used_fair">Used - Fair</option>
+          </select>
+        </div>
 
         {/* Photo Upload - Field name "photo" based on error */}
         <div>
