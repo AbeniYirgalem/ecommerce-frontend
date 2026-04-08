@@ -1,5 +1,5 @@
-// src/utils/storage.js
-// Type-safe localStorage helpers — centralises all localStorage access.
+﻿// src/utils/storage.js
+// Type-safe localStorage helpers - centralizes all localStorage access.
 
 const AUTH_TOKENS_KEY = "authTokens";
 const NEW_USER_DATA_KEY = "newUserData";
