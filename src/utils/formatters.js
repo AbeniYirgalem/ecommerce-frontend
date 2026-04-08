@@ -1,4 +1,4 @@
-// src/utils/formatters.js
+﻿// src/utils/formatters.js
 // Reusable display formatting helpers.
 
 /**
@@ -8,7 +8,7 @@
  */
 export const formatPrice = (amount, currency = "ETB") => {
   const num = parseFloat(amount);
-  if (isNaN(num)) return "—";
+  if (isNaN(num)) return "-";
   return `${currency} ${num.toLocaleString("en-ET", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -21,7 +21,7 @@ export const formatPrice = (amount, currency = "ETB") => {
  * @param {Intl.DateTimeFormatOptions} [options]
  */
 export const formatDate = (date, options = {}) => {
-  if (!date) return "—";
+  if (!date) return "-";
   return new Date(date).toLocaleDateString("en-ET", {
     year: "numeric",
     month: "short",
@@ -38,7 +38,7 @@ export const formatDate = (date, options = {}) => {
 export const truncateText = (text, maxLength = 100) => {
   if (!text) return "";
   if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength).trimEnd() + "…";
+  return text.slice(0, maxLength).trimEnd() + "...";
 };
 
 /**
