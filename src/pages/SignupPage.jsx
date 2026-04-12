@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -31,6 +31,7 @@ function SignUpPage() {
   });
   const [errorMessage, setErrorMessage] = useState("");
   const [verificationMessage, setVerificationMessage] = useState("");
+  const submitLockRef = useRef(false);
 
   // Clear errors when component mounts or unmounts
   useEffect(() => {
@@ -126,9 +127,16 @@ function SignUpPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (loading || submitLockRef.current) {
+      return;
+    }
+
+    submitLockRef.current = true;
     setErrorMessage("");
 
     if (!validateForm()) {
+      submitLockRef.current = false;
       return;
     }
 
@@ -144,6 +152,8 @@ function SignUpPage() {
       await dispatch(registerUser(apiData));
     } catch (err) {
       console.error("Registration error:", err);
+    } finally {
+      submitLockRef.current = false;
     }
   };
 
@@ -353,4 +363,3 @@ function SignUpPage() {
 }
 
 export default SignUpPage;
-
