@@ -27,7 +27,7 @@ const clearPersistedAuth = () => {
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  timeout: 10000, // 10 seconds timeout
+  timeout: 30000, // 30 seconds timeout
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -130,6 +130,18 @@ api.interceptors.response.use(
     }
 
     // Retry Logic for Network Errors or 5xx Server Errors
+    const requestMethod = (originalRequest?.method || "get").toLowerCase();
+    const isNonIdempotentMethod = ["post", "put", "patch", "delete"].includes(
+      requestMethod,
+    );
+    const isRegisterEndpoint =
+      typeof originalRequest?.url === "string" &&
+      originalRequest.url.includes("/api/auth/register");
+
+    if (isNonIdempotentMethod || isRegisterEndpoint) {
+      return Promise.reject(error);
+    }
+
     const shouldRetry =
       !error.response ||
       (error.response.status >= 500 && error.response.status < 600);
@@ -158,4 +170,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-
