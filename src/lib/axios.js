@@ -2,6 +2,8 @@
 // Centralized Axios instance with JWT auth interceptors and token refresh logic.
 import axios from "axios";
 
+const DEFAULT_API_URL = "https://ecommerce-backend-wcy3.onrender.com";
+
 // Lazily-injected store reference - avoids circular dependency with store.js
 let storeInstance = null;
 export const injectStore = (store) => {
@@ -26,7 +28,7 @@ const clearPersistedAuth = () => {
 };
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || DEFAULT_API_URL,
   timeout: 30000, // 30 seconds timeout
   headers: {
     "Content-Type": "application/json",
@@ -36,10 +38,10 @@ const api = axios.create({
 });
 
 const clearServerCookie = async () => {
-  if (!import.meta.env.VITE_API_URL) return;
+  const apiBaseUrl = import.meta.env.VITE_API_URL || DEFAULT_API_URL;
   try {
     await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/auth/logout`,
+      `${apiBaseUrl}/api/auth/logout`,
       {},
       { withCredentials: true },
     );
