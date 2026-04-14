@@ -1,11 +1,9 @@
 ﻿import { useEffect, useState } from "react";
-import emailjs from "@emailjs/browser";
 import { useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
 
-const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const CONTACT_API_URL =
+  "https://ecommerce-backend-wcy3.onrender.com/api/contact";
 
 const Contact = () => {
   const user = useSelector((state) => state.auth.user);
@@ -17,14 +15,6 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-
-  const isEmailConfigured = Boolean(SERVICE_ID && TEMPLATE_ID && PUBLIC_KEY);
-
-  useEffect(() => {
-    if (PUBLIC_KEY) {
-      emailjs.init({ publicKey: PUBLIC_KEY });
-    }
-  }, [PUBLIC_KEY]);
 
   useEffect(() => {
     if (user?.name || user?.email) {
@@ -42,25 +32,25 @@ const Contact = () => {
     setSuccess("");
     setError("");
 
-    if (!isEmailConfigured) {
-      const msg = "Email service is not configured. Add your EmailJS keys.";
-      setError(msg);
-      toast.error(msg);
-      setLoading(false);
-      return;
-    }
-
     try {
-      await emailjs.send(
-        SERVICE_ID,
-        TEMPLATE_ID,
-        {
+      const response = await fetch(CONTACT_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           name: form.name,
           email: form.email,
           message: form.message,
-        },
-        { publicKey: PUBLIC_KEY },
-      );
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.message || "Failed to send message.");
+      }
+
       setSuccess("Message sent successfully!");
       toast.success("Message sent successfully!");
       setForm({
@@ -69,11 +59,8 @@ const Contact = () => {
         message: "",
       });
     } catch (err) {
-      console.error("EmailJS send error", err);
-      const msg =
-        err?.status === 404
-          ? "Failed to send message. Check your EmailJS Service ID, Template ID, and Public Key."
-          : "Failed to send message. Please try again.";
+      console.error("Contact form submit error", err);
+      const msg = err?.message || "Failed to send message. Please try again.";
       setError(msg);
       toast.error(msg);
     } finally {
@@ -99,7 +86,7 @@ const Contact = () => {
               </span>
               <div>
                 <p className="font-semibold">Email</p>
-                <p>hello@unibazzar.com</p>
+                <p>abenezeryirgalem0@gmail.com</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -167,7 +154,7 @@ const Contact = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#152B67] to-blue-500 text-white font-semibold px-5 py-3 rounded-xl shadow-lg hover:shadow-xl transition disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#152B67] to-blue-500 text-white font-semibold px-5 py-3 rounded-xl shadow-lg hover:shadow-xl transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? "Sending..." : "Send Message"}
             </button>
@@ -179,4 +166,3 @@ const Contact = () => {
 };
 
 export default Contact;
-
