@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emailjs/browser": "^4.4.1",
     "@headlessui/react": "^2.2.2",
     "@heroicons/react": "^2.2.0",
     "@heroui/react": "^2.7.8",
