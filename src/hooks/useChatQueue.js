@@ -22,8 +22,9 @@ import {
 } from "../services/chat.service";
 
 // --- Polling configuration ---------------------------------------------------
-const POLL_INTERVAL_MS = 1500; // check every 1.5 s
-const MAX_POLL_TIME_MS = 60_000; // give up after 60 s
+const POLL_INTERVAL_MS = 1200; // check every 1.2 s
+const MAX_POLL_TIME_MS = 60_000; // initial wait window
+const POLL_GRACE_MS = 20_000; // extra grace before final timeout
 const TERMINAL_STATUSES = new Set(["completed", "failed"]);
 
 // --- Unique ID generator for message list keys ------------------------------
@@ -49,7 +50,8 @@ const useChatQueue = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Active polling timers - stored in a ref so we can cancel on unmount
-  const pollTimersRef = useRef(new Map()); // jobId -> { intervalId, timeoutId }
+  const pollTimersRef = useRef(new Map()); // jobId -> { intervalId, timeoutId, extended }
+  const inFlightRef = useRef(null);
 
   // Read logged-in userId from Redux (optional - falls back to "anonymous")
   const userId = useSelector(
@@ -77,6 +79,11 @@ const useChatQueue = () => {
     }
   }, []);
 
+  const finishProcessing = useCallback(() => {
+    inFlightRef.current = null;
+    setIsProcessing(false);
+  }, []);
+
   // --- polling logic --------------------------------------------------------
 
   /**
@@ -87,33 +94,65 @@ const useChatQueue = () => {
    */
   const startPolling = useCallback(
     (jobId, placeholderId) => {
+      const handleTerminalState = (status, result, error) => {
+        cancelPolling(jobId);
+
+        if (status === "completed" && result) {
+          replaceMessage(placeholderId, {
+            type: result.type || "text",
+            text: result.reply || "Here are the results from UniBazzar!",
+            products: result.products || [],
+            priceBand: result.priceBand || null,
+          });
+        } else {
+          replaceMessage(placeholderId, {
+            type: "error",
+            text:
+              error ||
+              "Sorry, the assistant ran into an issue. Please try again.",
+          });
+        }
+
+        finishProcessing();
+      };
+
+      // Initial user-facing queue state
+      replaceMessage(placeholderId, {
+        type: "typing",
+        text: "Thinking...",
+      });
+
       const intervalId = setInterval(async () => {
         try {
           const { status, result, error } = await pollJobStatus(jobId);
 
-          if (!TERMINAL_STATUSES.has(status)) return; // still waiting / active
+          if (!TERMINAL_STATUSES.has(status)) {
+            if (status === "waiting" || status === "delayed") {
+              replaceMessage(placeholderId, {
+                type: "typing",
+                text: "Queued...",
+              });
+            } else if (status === "active") {
+              replaceMessage(placeholderId, {
+                type: "typing",
+                text: "Finding results...",
+              });
+            }
 
-          // --- Job completed -------------------------------------------------
-          cancelPolling(jobId);
-
-          if (status === "completed" && result) {
-            replaceMessage(placeholderId, {
-              type: result.type || "text",
-              text: result.reply || "Here are the results from UniBazzar!",
-              products: result.products || [],
-              priceBand: result.priceBand || null,
-            });
-          } else {
-            // Job failed after all retries
-            replaceMessage(placeholderId, {
-              type: "error",
-              text:
-                error ||
-                "Sorry, the assistant ran into an issue. Please try again.",
-            });
+            return;
           }
 
-          setIsProcessing(false);
+          if (status === "completed" && !result) {
+            // Rare race where completion is visible before returnvalue is hydrated.
+            replaceMessage(placeholderId, {
+              type: "typing",
+              text: "Finalizing response...",
+            });
+
+            return;
+          }
+
+          handleTerminalState(status, result, error);
         } catch (err) {
           // Network error during polling - don't stop yet, keep trying
           console.warn("[useChatQueue] polling error:", err.message);
@@ -121,18 +160,57 @@ const useChatQueue = () => {
       }, POLL_INTERVAL_MS);
 
       // Safety timeout - give up if job takes too long
-      const timeoutId = setTimeout(() => {
+      const timeoutHandler = async () => {
+        try {
+          const latest = await pollJobStatus(jobId);
+          if (
+            TERMINAL_STATUSES.has(latest.status) &&
+            (latest.status !== "completed" || latest.result)
+          ) {
+            handleTerminalState(latest.status, latest.result, latest.error);
+            return;
+          }
+        } catch (err) {
+          console.warn(
+            "[useChatQueue] final status check failed:",
+            err.message,
+          );
+        }
+
+        const timers = pollTimersRef.current.get(jobId);
+        if (!timers) return;
+
+        if (!timers.extended) {
+          replaceMessage(placeholderId, {
+            type: "typing",
+            text: "Still working...",
+          });
+
+          const graceTimeoutId = setTimeout(timeoutHandler, POLL_GRACE_MS);
+          pollTimersRef.current.set(jobId, {
+            ...timers,
+            timeoutId: graceTimeoutId,
+            extended: true,
+          });
+          return;
+        }
+
         cancelPolling(jobId);
         replaceMessage(placeholderId, {
           type: "error",
-          text: "The assistant took too long to respond. Please try again.",
+          text: "The assistant is taking longer than expected. Please try again.",
         });
-        setIsProcessing(false);
-      }, MAX_POLL_TIME_MS);
+        finishProcessing();
+      };
 
-      pollTimersRef.current.set(jobId, { intervalId, timeoutId });
+      const timeoutId = setTimeout(timeoutHandler, MAX_POLL_TIME_MS);
+      pollTimersRef.current.set(jobId, {
+        intervalId,
+        timeoutId,
+        extended: false,
+      });
     },
-    [cancelPolling, replaceMessage],
+    [cancelPolling, finishProcessing, replaceMessage],
   );
 
   // --- public API -----------------------------------------------------------
@@ -154,6 +232,12 @@ const useChatQueue = () => {
       const trimmed = (text || "").trim();
       if (!trimmed || isProcessing) return;
 
+      const normalized = trimmed.toLowerCase();
+      if (inFlightRef.current === normalized) {
+        return;
+      }
+
+      inFlightRef.current = normalized;
       setIsProcessing(true);
 
       // --- Step 1: Show user message immediately ---------------------------
@@ -201,10 +285,17 @@ const useChatQueue = () => {
           });
         }
 
-        setIsProcessing(false);
+        finishProcessing();
       }
     },
-    [isProcessing, userId, appendMessage, replaceMessage, startPolling],
+    [
+      isProcessing,
+      userId,
+      appendMessage,
+      replaceMessage,
+      startPolling,
+      finishProcessing,
+    ],
   );
 
   /**
@@ -216,8 +307,8 @@ const useChatQueue = () => {
       cancelPolling(jobId);
     }
     setMessages([]);
-    setIsProcessing(false);
-  }, [cancelPolling]);
+    finishProcessing();
+  }, [cancelPolling, finishProcessing]);
 
   return { messages, isProcessing, addMessage, clearMessages };
 };
