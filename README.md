@@ -22,6 +22,10 @@ Unibazzar connects students, merchants, and tutors in a vibrant digital marketpl
 
 Join us in transforming campus commerce and collaboration!
 
+## 🔗 Backend Repository
+
+The backend for this project is available here: [ecommerce-backend](https://github.com/AbeniYirgalem/ecommerce-backend)
+
 ### 1. Clone the Repository
 
 ```bash
@@ -42,6 +46,7 @@ npm run dev
 
 ### 5. Backend Setup (Required)
 
+- Clone or reference the backend repository: [ecommerce-backend](https://github.com/AbeniYirgalem/ecommerce-backend)
 - You must have the backend API running at the URL specified in your `.env` file (`VITE_API_URL`).
 - Ensure CORS is enabled for your frontend origin in the backend settings.
 
