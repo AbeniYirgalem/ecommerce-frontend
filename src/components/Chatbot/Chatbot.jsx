@@ -1,4 +1,4 @@
-﻿// src/components/Chatbot/Chatbot.jsx
+// src/components/Chatbot/Chatbot.jsx
 // -----------------------------------------------------------------------------
 // UniBazzar AI Chatbot widget -- integrated with the BullMQ async queue.
 //
@@ -41,7 +41,7 @@ const WELCOME_MESSAGE = {
   id: "welcome",
   sender: "bot",
   type: "text",
-  text: "Hello! I'm your UniBazzar assistant. Ask me to find products, compare prices, or learn how to post your own product.",
+  text: "Welcome to UniBazzar. Search products like electronics or clothes.",
 };
 
 // -- Sub-components ---------------------------------------------------------
@@ -49,11 +49,11 @@ const WELCOME_MESSAGE = {
 /**
  * TypingIndicator -- animated three-dot "bot is typing" bubble.
  */
-const TypingIndicator = () => (
+const TypingIndicator = ({ text = "Thinking..." }) => (
   <div className="flex justify-start">
     <div className="p-3 rounded-lg rounded-bl-none shadow bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white text-sm flex items-center gap-1">
       <span className="text-xs text-gray-500 dark:text-gray-300 mr-1 italic">
-        Chatbot is typing
+        {text}
       </span>
       {[0, 1, 2].map((i) => (
         <span
@@ -133,7 +133,7 @@ const ChatMessage = ({ msg }) => {
         animate="visible"
         key={msg.id}
       >
-        <TypingIndicator />
+        <TypingIndicator text={msg.text || "Thinking..."} />
       </motion.div>
     );
   }

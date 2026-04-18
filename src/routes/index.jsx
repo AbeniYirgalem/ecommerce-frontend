@@ -45,7 +45,7 @@ export default function AppRoutes() {
       <Route path={ROUTES.THANK_YOU} element={<ThankYou />} />
 
       {/* -- Email Verification & Password Reset -- */}
-      <Route path="/verify/:token" element={<VerifyEmailPage />} />
+      <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmailPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
 
